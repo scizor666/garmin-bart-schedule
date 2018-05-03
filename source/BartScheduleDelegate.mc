@@ -14,6 +14,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     var notify;
     var stations;
+    var loading = false;
 
     function initialize(handler) {
         Ui.BehaviorDelegate.initialize();
@@ -27,11 +28,14 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     }
 
     function onSelect() {
-        updateAll();
+        if (!loading) {
+        	updateAll();
+    	}
         return true;
     }
 
     function updateAll() {
+        loading = true;
         notify.invoke("BART destinations\nare loading...");
         var position = Position.getInfo().position.toDegrees();
         recieveStationDestinations(closestStation(position));
@@ -64,6 +68,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     }
 
     function onReceiveStationSchedule(responseCode, data) {
+        loading = false;
         switch (responseCode) {
             case 200: {
                 updateDestinations(data["root"]["station"][0]);
