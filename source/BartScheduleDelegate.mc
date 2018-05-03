@@ -92,12 +92,17 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
         try {
             var destinations = stationData["etd"];
             var message = shortenName(stationData["name"]) + "\n";
-            for (var i = 0; i < destinations.size(); i++) {
-                var destination = destinations[i];
-                var minutes = destination["estimate"][0]["minutes"];
-                message += Lang.format("$1$: $2$\n", [shortenName(destination["destination"]), minutes]);
+
+            if ( destinations != null && destinations.size() > 0) {
+                for (var i = 0; i < destinations.size(); i++) {
+                    var destination = destinations[i];
+                    var minutes = destination["estimate"][0]["minutes"];
+                    message += Lang.format("$1$: $2$\n", [shortenName(destination["destination"]), minutes]);
+                }
+            } else {
+                message += "No Destinations\nAvailable!";
             }
-            notify.invoke(message.length() > 0 ? message : "No Destinations Available!");
+            notify.invoke(message);
         } catch (ex) {
             notify.invoke("Server Error.\nTry Later");
         }
