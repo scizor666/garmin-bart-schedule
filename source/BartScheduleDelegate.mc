@@ -10,6 +10,8 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     const BART_API_DEFAULT_OPTIONS = { :method => Comm.HTTP_REQUEST_METHOD_GET,
                                        :responseType => Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON };
 
+    const DISTANATION_NAME_LENGTH = 19;
+
     var notify;
     var stations;
 
@@ -62,18 +64,55 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     }
 
     function onReceiveStationSchedule(responseCode, data) {
-        if (responseCode == 200) {
-            var stationData = data["root"]["station"][0];
-        	var destinations = stationData["etd"];
-        	var message = stationData["name"] + "\n";
-    		for (var i = 0; i < destinations.size(); i++) {
-    			var destination = destinations[i];
-    			var minutes = destination["estimate"][0]["minutes"];
-    			message += Lang.format("$1$: $2$\n", [destination["destination"], minutes]);
-    		}
-        	notify.invoke(message.length() > 0 ? message : "No destinations available!");
-        } else {
-            notify.invoke("Failed to load\nError: " + responseCode.toString());
+        switch (responseCode) {
+            case 200: {
+                updateDestinations(data["root"]["station"][0]);
+                break;
+            }
+            case -300: {
+                notify.invoke("Network\nNot Available.\nTry Again");
+                break;
+            }
+            case -2: {
+                notify.invoke("Check Bluetooth\nConnection");
+                break;
+            }
+            case -104: {
+                notify.invoke("App Connection\nRequired");
+                break;
+            }
+            default: {
+                notify.invoke("Failed to Load\nError: " + responseCode.toString());
+                break;
+            }
         }
+    }
+
+    function updateDestinations(stationData) {
+        try {
+            var destinations = stationData["etd"];
+            var message = shortenName(stationData["name"]) + "\n";
+            for (var i = 0; i < destinations.size(); i++) {
+                var destination = destinations[i];
+                var minutes = destination["estimate"][0]["minutes"];
+                message += Lang.format("$1$: $2$\n", [shortenName(destination["destination"]), minutes]);
+            }
+            notify.invoke(message.length() > 0 ? message : "No Destinations Available!");
+        } catch (ex) {
+            notify.invoke("Server Error.\nTry Later");
+        }
+    }
+
+    function shortenName(name) {
+        if (name.length() <= DISTANATION_NAME_LENGTH ) {
+            return name;
+        }
+
+        var slashIndex = name.find("/");
+        if ( slashIndex != null) {
+           return name.substring(0, slashIndex);
+        }
+
+        return name.substring(0, DISTANATION_NAME_LENGTH - 3) + "...";
     }
 }
