@@ -6,7 +6,7 @@
 
 using Toybox.Application as App;
 
-class WebRequestApp extends App.AppBase {
+class BartScheduleApp extends App.AppBase {
     hidden var mView;
 
     function initialize() {
@@ -23,7 +23,7 @@ class WebRequestApp extends App.AppBase {
 
     // Return the initial view of your application here
     function getInitialView() {
-        mView = new WebRequestView();
-        return [mView, new WebRequestDelegate(mView.method(:onReceive))];
+        mView = new BartScheduleView();
+        return [mView, new BartScheduleDelegate(mView.method(:onReceive))];
     }
 }

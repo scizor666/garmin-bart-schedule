@@ -7,7 +7,7 @@
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics;
 
-class WebRequestView extends Ui.View {
+class BartScheduleView extends Ui.View {
     hidden var mMessage = "Press menu button";
     hidden var mModel;
 
@@ -17,7 +17,7 @@ class WebRequestView extends Ui.View {
 
     // Load your resources here
     function onLayout(dc) {
-        mMessage = "Press menu or\nselect button";
+        mMessage = "Press select button\nto get BART\ndestinations";
     }
 
     // Restore the state of the app and prepare the view to be shown
