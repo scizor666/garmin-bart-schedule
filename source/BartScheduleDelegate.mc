@@ -1,7 +1,7 @@
 using Toybox.Communications as Comm;
 using Toybox.WatchUi as Ui;
 using Toybox.Math as Math;
-using Toybox.Position as Position;
+using Toybox.Timer;
 
 class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
@@ -10,11 +10,10 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     const BART_API_DEFAULT_OPTIONS = { :method => Comm.HTTP_REQUEST_METHOD_GET,
                                        :responseType => Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON };
 
-    const DISTANATION_NAME_LENGTH = 19;
-
     var notify;
     var stations;
     var loading = false;
+    var station;
 
     function initialize(handler) {
         Ui.BehaviorDelegate.initialize();
@@ -36,9 +35,20 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     function updateAll() {
         loading = true;
-        notify.invoke("BART destinations\nare loading...");
-        var position = Position.getInfo().position.toDegrees();
-        recieveStationDestinations(closestStation(position));
+
+        if (station == null) {
+        notify.invoke("Waiting for\nGPS...");
+            var query = new PositionQuery();
+            query.requestPosition(Position.QUALITY_USABLE, null, method(:onPositionDefined));
+        } else {
+            recieveStationDestinations(station);
+        }
+    }
+
+    function onPositionDefined(info) {
+        var position = info.position.toDegrees();
+        station = closestStation(position);
+        recieveStationDestinations(station);
     }
 
     function closestStation(position) {
@@ -59,6 +69,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     }
 
     function recieveStationDestinations(station) {
+        notify.invoke("BART destinations\nare loading...");
         Comm.makeWebRequest(
             Lang.format("$1$/etd.aspx?cmd=etd&orig=$2$&$3$", [BART_API_BASE_URL, station, BART_API_DEFAULT_PARAMS]),
             {},
@@ -95,34 +106,10 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     function updateDestinations(stationData) {
         try {
-            var destinations = stationData["etd"];
-            var message = shortenName(stationData["name"]) + "\n";
-
-            if ( destinations != null && destinations.size() > 0) {
-                for (var i = 0; i < destinations.size(); i++) {
-                    var destination = destinations[i];
-                    var minutes = destination["estimate"][0]["minutes"];
-                    message += Lang.format("$1$: $2$\n", [shortenName(destination["destination"]), minutes]);
-                }
-            } else {
-                message += "No Destinations\nAvailable!";
-            }
-            notify.invoke(message);
+            var viewer = new DestinationViewer(stationData, notify);
+            viewer.view();
         } catch (ex) {
             notify.invoke("Server Error.\nTry Later");
         }
-    }
-
-    function shortenName(name) {
-        if (name.length() <= DISTANATION_NAME_LENGTH ) {
-            return name;
-        }
-
-        var slashIndex = name.find("/");
-        if ( slashIndex != null) {
-           return name.substring(0, slashIndex);
-        }
-
-        return name.substring(0, DISTANATION_NAME_LENGTH - 3) + "...";
     }
 }

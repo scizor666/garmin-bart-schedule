@@ -17,7 +17,6 @@ class BartScheduleView extends Ui.View {
 
     // Load your resources here
     function onLayout(dc) {
-        mMessage = "BART destinations\nare loading...";
     }
 
     // Restore the state of the app and prepare the view to be shown
