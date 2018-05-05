@@ -7,21 +7,21 @@ class DestinationViewer {
 
     hidden var prependText;
     hidden var destinations;
-    hidden var destinationsSlice;
     hidden var viewer;
     hidden var offset = 0;
     hidden var timer = new Timer.Timer();
+    hidden var stopView = false;
 
-    function initialize(stationData, viewer) {
-        self.prependText = shortenName(stationData["name"]) + "\n";
-        self.destinations = stationData["etd"];
+    function initialize(title, destinations, viewer) {
+        self.prependText = shortenName(title) + "\n";
+        self.destinations = destinations;
         self.viewer = viewer;
     }
 
     function view() {
         if ( destinations != null && destinations.size() > 0) {
             if (destinations.size() < 4) {
-               viewer.invoke(prependText + destinationsAsString(destinations));
+               viewer.invoke(prependText + destinationsAsString(null, null));
             } else {
                viewSlice();
             }
@@ -31,18 +31,27 @@ class DestinationViewer {
     }
 
     function viewSlice() {
-        destinationsSlice = destinations.slice(offset, offset + LIMIT);
+        if( stopView) {
+            timer = null;
+            return;
+        }
+        viewer.invoke(prependText + destinationsAsString(offset, offset + LIMIT));
         offset = offset + LIMIT < destinations.size() ? offset + 1 : 0;
-        viewer.invoke(prependText + destinationsAsString(destinationsSlice));
         timer.start(method(:viewSlice), 2000, false);
     }
 
-    hidden function destinationsAsString(destinations) {
+    function stop() {
+        stopView = true;
+    }
+
+    hidden function destinationsAsString(offset, limit) {
         var asString = "";
-        for (var i = 0; i < destinations.size(); i++) {
+        limit = (limit != null) ? limit : destinations.size();
+        offset = (offset != null) ? offset : 0; 
+        for (var i = offset; i < limit; i++) {
             var destination = destinations[i];
-            var minutes = toDigitalMinutes(destination["estimate"][0]["minutes"]);
-            asString += Lang.format("$1$: $2$\n", [shortenName(destination["destination"]), minutes]);
+            var minutes = toDigitalMinutes(destination[:estimate][0][:minutes]);
+            asString += Lang.format("$1$: $2$\n", [shortenName(destination[:destination]), minutes]);
         }
         return asString;
     }

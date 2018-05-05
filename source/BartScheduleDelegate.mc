@@ -14,6 +14,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     var stations;
     var loading = false;
     var station;
+    var viewer;
 
     function initialize(handler) {
         Ui.BehaviorDelegate.initialize();
@@ -28,6 +29,10 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     function onSelect() {
         if (!loading) {
+            if (viewer != null) {
+                viewer.stop();
+                viewer = null;
+            }
         	updateAll();
     	}
         return true;
@@ -48,6 +53,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     function onPositionDefined(info) {
         var position = info.position.toDegrees();
         station = closestStation(position);
+        stations = null; // stations not needed anymore
         recieveStationDestinations(station);
     }
 
@@ -106,10 +112,21 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     function updateDestinations(stationData) {
         try {
-            var viewer = new DestinationViewer(stationData, notify);
+            viewer = new DestinationViewer(stationData["name"], destinationsFromStationData(stationData), notify);
             viewer.view();
         } catch (ex) {
             notify.invoke("Server Error.\nTry Later");
         }
+    }
+
+    hidden function destinationsFromStationData(stationData) {
+        var destinations = [];
+        if (stationData["etd"] != null) {
+            for (var i = 0; i < stationData["etd"].size(); i++) {
+                destinations.add({:destination => stationData["etd"][i]["destination"],
+                                   :estimate => [{:minutes => stationData["etd"][i]["estimate"][0]["minutes"]}] });
+            }
+        }
+        return destinations;
     }
 }
