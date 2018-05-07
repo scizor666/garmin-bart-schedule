@@ -5,11 +5,12 @@ class DestinationViewer {
     const LIMIT = 3;
     const DISTANATION_NAME_LENGTH = 19;
 
+    static var timer = new Timer.Timer();
+
     hidden var prependText;
     hidden var destinations;
     hidden var viewer;
     hidden var offset = 0;
-    hidden var timer = new Timer.Timer();
     hidden var stopView = false;
 
     function initialize(title, destinations, viewer) {
@@ -32,7 +33,6 @@ class DestinationViewer {
 
     function viewSlice() {
         if( stopView) {
-            timer = null;
             return;
         }
         viewer.invoke(prependText + destinationsAsString(offset, offset + LIMIT));
