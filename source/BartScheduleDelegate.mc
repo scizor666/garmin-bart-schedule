@@ -123,8 +123,11 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
         var destinations = [];
         if (stationData["etd"] != null) {
             for (var i = 0; i < stationData["etd"].size(); i++) {
-                destinations.add({:destination => stationData["etd"][i]["destination"],
-                                   :estimate => [{:minutes => stationData["etd"][i]["estimate"][0]["minutes"]}] });
+                var minutes = [];
+                for(var j = 0; j < stationData["etd"][i]["estimate"].size(); j++) {
+                    minutes.add(stationData["etd"][i]["estimate"][j]["minutes"]);
+                }
+                destinations.add({:name => stationData["etd"][i]["destination"], :minutes => minutes});
             }
         }
         return destinations;

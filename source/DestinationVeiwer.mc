@@ -4,6 +4,7 @@ class DestinationViewer {
 
     const LIMIT = 3;
     const DISTANATION_NAME_LENGTH = 19;
+    const MINUTES_LIMIT = 3;
 
     static var timer = new Timer.Timer();
 
@@ -50,14 +51,22 @@ class DestinationViewer {
         offset = (offset != null) ? offset : 0; 
         for (var i = offset; i < limit; i++) {
             var destination = destinations[i];
-            var minutes = toDigitalMinutes(destination[:estimate][0][:minutes]);
-            asString += Lang.format("$1$: $2$\n", [shortenName(destination[:destination]), minutes]);
+            var minutes = formatMinutes(destination[:minutes]);
+            asString += Lang.format("$1$: $2$\n", [shortenName(destination[:name]), minutes]);
         }
         return asString;
     }
 
-    hidden function toDigitalMinutes(minutes) {
-        return minutes.equals("Leaving") ? 0 : minutes;
+    hidden function formatMinutes(minutes) {
+        var formatted = "";
+        var limit = minutes.size() > MINUTES_LIMIT ? MINUTES_LIMIT : minutes.size();
+        for(var i = 0; i < limit; i++) {
+            if (i > 0) {
+                formatted += ",";
+            }
+            formatted += minutes[i].equals("Leaving") ? 0 : minutes[i];
+        }
+        return formatted;
     }
 
 
