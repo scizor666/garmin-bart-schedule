@@ -2,6 +2,7 @@ using Toybox.Communications as Comm;
 using Toybox.WatchUi as Ui;
 using Toybox.Math as Math;
 using Toybox.Timer;
+using Toybox.System;
 
 class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
@@ -9,6 +10,8 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     const BART_API_DEFAULT_PARAMS = "key=MW9S-E7SL-26DU-VV8V&json=y";
     const BART_API_DEFAULT_OPTIONS = { :method => Comm.HTTP_REQUEST_METHOD_GET,
                                        :responseType => Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON };
+
+   const APP_CONNECTION_REQUIRED = "App Connection\nRequired";
 
     var notify;
     var stations;
@@ -39,6 +42,10 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     }
 
     function updateAll() {
+        if (!System.getDeviceSettings().phoneConnected) {
+            notify.invoke(APP_CONNECTION_REQUIRED);
+            return;
+        }
         loading = true;
 
         if (station == null) {
@@ -100,7 +107,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
                 break;
             }
             case -104: {
-                notify.invoke("App Connection\nRequired");
+                notify.invoke(APP_CONNECTION_REQUIRED);
                 break;
             }
             default: {
