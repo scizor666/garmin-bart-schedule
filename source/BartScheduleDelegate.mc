@@ -5,11 +5,11 @@ using Toybox.Timer;
 using Toybox.System;
 
 class BartScheduleDelegate extends Ui.BehaviorDelegate {
-
-    const BART_API_BASE_URL = "https://api.bart.gov/api";
+    const BART_API_BASE_URL = Ui.loadResource(Rez.Strings.apiUrl);
     const BART_API_DEFAULT_PARAMS = "key=MW9S-E7SL-26DU-VV8V&json=y";
     const BART_API_DEFAULT_OPTIONS = { :method => Comm.HTTP_REQUEST_METHOD_GET,
-                                       :responseType => Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON };
+                                       :responseType => Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON,
+                                       :headers => {"x-api-key" => Ui.loadResource(Rez.Strings.apiKey)}};
 
    const APP_CONNECTION_REQUIRED = "App Connection\nRequired";
 
@@ -84,7 +84,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     function recieveStationDestinations(station) {
         notify.invoke("BART destinations\nare loading...");
         Comm.makeWebRequest(
-            Lang.format("$1$/etd.aspx?cmd=etd&orig=$2$&$3$", [BART_API_BASE_URL, station, BART_API_DEFAULT_PARAMS]),
+            Lang.format("$1$?cmd=etd&orig=$2$&$3$", [BART_API_BASE_URL, station, BART_API_DEFAULT_PARAMS]),
             {},
             BART_API_DEFAULT_OPTIONS,
             method(:onReceiveStationSchedule)
@@ -95,7 +95,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
         loading = false;
         switch (responseCode) {
             case 200: {
-                updateDestinations(data["root"]["station"][0]);
+                updateDestinations(data);
                 break;
             }
             case -300: {
@@ -119,24 +119,10 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
 
     function updateDestinations(stationData) {
         try {
-            viewer = new DestinationViewer(stationData["name"], destinationsFromStationData(stationData), notify);
+            viewer = new DestinationViewer(stationData["name"], stationData["destinations"], notify);
             viewer.view();
         } catch (ex) {
             notify.invoke("Server Error.\nTry Later");
         }
-    }
-
-    hidden function destinationsFromStationData(stationData) {
-        var destinations = [];
-        if (stationData["etd"] != null) {
-            for (var i = 0; i < stationData["etd"].size(); i++) {
-                var minutes = [];
-                for(var j = 0; j < stationData["etd"][i]["estimate"].size(); j++) {
-                    minutes.add(stationData["etd"][i]["estimate"][j]["minutes"]);
-                }
-                destinations.add({:name => stationData["etd"][i]["destination"], :minutes => minutes});
-            }
-        }
-        return destinations;
     }
 }

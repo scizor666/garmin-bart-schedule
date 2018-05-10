@@ -51,8 +51,8 @@ class DestinationViewer {
         offset = (offset != null) ? offset : 0; 
         for (var i = offset; i < limit; i++) {
             var destination = destinations[i];
-            var minutes = formatMinutes(destination[:minutes]);
-            asString += Lang.format("$1$: $2$\n", [shortenName(destination[:name]), minutes]);
+            var minutes = formatMinutes(destination["minutes"]);
+            asString += Lang.format("$1$: $2$\n", [shortenName(destination["name"]), minutes]);
         }
         return asString;
     }
