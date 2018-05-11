@@ -1,10 +1,10 @@
 using Toybox.Timer;
+using Toybox.Application.Properties;
 
 class DestinationViewer {
 
     const LIMIT = 3;
     const DISTANATION_NAME_LENGTH = 19;
-    const MINUTES_LIMIT = 3;
 
     static var timer = new Timer.Timer();
 
@@ -13,11 +13,13 @@ class DestinationViewer {
     hidden var viewer;
     hidden var offset = 0;
     hidden var stopView = false;
+    hidden var minutesReadingsNumber;
 
     function initialize(title, destinations, viewer) {
         self.prependText = shortenName(title) + "\n";
         self.destinations = destinations;
         self.viewer = viewer;
+        self.minutesReadingsNumber = Properties.getValue("minutesReadingsNumber");
     }
 
     function view() {
@@ -59,7 +61,7 @@ class DestinationViewer {
 
     hidden function formatMinutes(minutes) {
         var formatted = "";
-        var limit = minutes.size() > MINUTES_LIMIT ? MINUTES_LIMIT : minutes.size();
+        var limit = minutes.size() > minutesReadingsNumber ? minutesReadingsNumber : minutes.size();
         for(var i = 0; i < limit; i++) {
             if (i > 0) {
                 formatted += ",";

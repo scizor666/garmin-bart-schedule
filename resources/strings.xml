@@ -1,3 +1,21 @@
 <resources>
     <string id="AppName">Bart Schedule</string>
+    <!-- settings titles -->
+    <string id="textColorTitle">Text Color</string>
+    <string id="backgroundColorTitle">Background Color</string>
+    <string id="minutesReadingsNumberTitle">Number of minute readings</string>
+    <string id="fontSizeTitle">Font Size</string>
+    <!-- settings prompts -->
+    <string id="minutesReadingsNumberPrompt">Number of readings for minutes to show</string>
+    <!-- colors -->
+    <string id="white">White</string>
+    <string id="yellow">Yellow</string>
+    <string id="orange">Orange</string>
+    <string id="red">Red</string>
+    <string id="green">Green</string>
+    <string id="blue">Blue</string>
+    <string id="black">Black</string>
+    <!-- font sizes -->
+    <string id="small">Small</string>
+    <string id="normal">Normal</string>
 </resources>

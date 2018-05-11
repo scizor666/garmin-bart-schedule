@@ -6,6 +6,7 @@
 
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics;
+using Toybox.Application.Properties;
 
 class BartScheduleView extends Ui.View {
     hidden var mMessage = "Press menu button";
@@ -25,9 +26,10 @@ class BartScheduleView extends Ui.View {
 
     // Update the view
     function onUpdate(dc) {
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
+        dc.setColor(Properties.getValue("textColor"), Properties.getValue("backgroundColor"));
         dc.clear();
-        dc.drawText(dc.getWidth()/2, dc.getHeight()/2, Graphics.FONT_SMALL, mMessage, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(dc.getWidth()/2, dc.getHeight()/2, Properties.getValue("fontSize"), mMessage,
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // Called when this View is removed from the screen. Save the

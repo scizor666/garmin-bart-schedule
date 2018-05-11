@@ -1,0 +1,33 @@
+<settings>
+    <setting propertyKey="@Properties.textColor" title="@Strings.textColorTitle">
+        <settingConfig type="list">
+            <listEntry value="0xFFFFFF">@Strings.white</listEntry>
+            <listEntry value="0xFFAA00">@Strings.yellow</listEntry>
+            <listEntry value="0xFF5500">@Strings.orange</listEntry>
+            <listEntry value="0xFF0000">@Strings.red</listEntry>
+            <listEntry value="0x00FF00">@Strings.green</listEntry>
+            <listEntry value="0x00AAFF">@Strings.blue</listEntry>
+            <listEntry value="0x000000">@Strings.black</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.backgroundColor" title="@Strings.backgroundColorTitle">
+        <settingConfig type="list">
+            <listEntry value="0xFFFFFF">@Strings.white</listEntry>
+            <listEntry value="0xFFAA00">@Strings.yellow</listEntry>
+            <listEntry value="0xFF5500">@Strings.orange</listEntry>
+            <listEntry value="0xFF0000">@Strings.red</listEntry>
+            <listEntry value="0x00FF00">@Strings.green</listEntry>
+            <listEntry value="0x00AAFF">@Strings.blue</listEntry>
+            <listEntry value="0x000000">@Strings.black</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.minutesReadingsNumber" title="@Strings.minutesReadingsNumberTitle" prompt="@Strings.minutesReadingsNumberPrompt">
+        <settingConfig type="numeric" min="1" max="3"/>
+    </setting>
+    <setting propertyKey="@Properties.fontSize" title="@Strings.fontSizeTitle">
+        <settingConfig type="list">
+            <listEntry value="2">@Strings.small</listEntry>
+            <listEntry value="3">@Strings.normal</listEntry>
+        </settingConfig>
+    </setting>
+</settings>

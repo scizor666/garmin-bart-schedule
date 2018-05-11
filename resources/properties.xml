@@ -1,0 +1,6 @@
+<properties>
+    <property id="textColor" type="number">0xFFFFFF</property>
+    <property id="backgroundColor" type="number">0x000000</property>
+    <property id="minutesReadingsNumber" type="number">3</property>
+    <property id="fontSize" type="number">2</property>
+</properties>
