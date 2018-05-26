@@ -16,6 +16,7 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
     var notify;
     var stations;
     var loading = false;
+    var locationUpdated = false;
     var station;
     var viewer;
 
@@ -48,19 +49,24 @@ class BartScheduleDelegate extends Ui.BehaviorDelegate {
         }
         loading = true;
 
-        if (station == null) {
-        notify.invoke("Waiting for\nGPS...");
+        if (station == null || !locationUpdated) {
+            notify.invoke("Waiting for\nGPS...");
             var query = new PositionQuery();
-            query.requestPosition(Position.QUALITY_USABLE, null, method(:onPositionDefined));
+            query.requestPosition(station == null ? Position.QUALITY_LAST_KNOWN : Position.QUALITY_USABLE, null, method(:onPositionDefined));
         } else {
             recieveStationDestinations(station);
         }
     }
 
     function onPositionDefined(info) {
+        if (station != null) {
+            locationUpdated = true;
+        }
         var position = info.position.toDegrees();
         station = closestStation(position);
-        stations = null; // stations not needed anymore
+        if (locationUpdated) {
+            stations = null; // stations not needed anymore
+        }
         recieveStationDestinations(station);
     }
 
